@@ -1,0 +1,71 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+
+// List of words for the game
+const std::vector<std::string> words = {
+    "hangman", "computer", "programming", "developer", "challenge",
+    "knowledge", "awesome", "solution", "experience", "learning"
+};
+
+// Function to select a random word from the list
+std::string getRandomWord(const std::vector<std::string>& wordList) {
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    return wordList[std::rand() % wordList.size()];
+}
+
+// Function to display the hangman word with underscores for missing letters
+std::string displayWord(const std::string& secretWord, const std::string& guessedLetters) {
+    std::string result = secretWord;
+    for (char& c : result) {
+        if (guessedLetters.find(c) == std::string::npos) {
+            c = '_';
+        }
+    }
+    return result;
+}
+
+int main() {
+    std::string secretWord = getRandomWord(words);
+    std::string guessedLetters;
+    int maxAttempts = 6; // Maximum allowed incorrect guesses
+
+    std::cout << "Welcome to Hangman! Try to guess the word." << std::endl;
+    
+    while (maxAttempts > 0) {
+        std::cout << "Word: " << displayWord(secretWord, guessedLetters) << std::endl;
+        std::cout << "Guessed letters: " << guessedLetters << std::endl;
+        std::cout << "Attempts left: " << maxAttempts << std::endl;
+        
+        char guess;
+        std::cout << "Enter a letter: ";
+        std::cin >> guess;
+        
+        if (guessedLetters.find(guess) != std::string::npos) {
+            std::cout << "You already guessed that letter!" << std::endl;
+            continue;
+        }
+        
+        guessedLetters += guess;
+        
+        if (secretWord.find(guess) == std::string::npos) {
+            maxAttempts--;
+            std::cout << "Incorrect guess." << std::endl;
+        } else {
+            std::cout << "Correct guess!" << std::endl;
+        }
+        
+        if (displayWord(secretWord, guessedLetters) == secretWord) {
+            std::cout << "Congratulations! You guessed the word: " << secretWord << std::endl;
+            break;
+        }
+    }
+    
+    if (maxAttempts == 0) {
+        std::cout << "Out of attempts. The word was: " << secretWord << std::endl;
+    }
+
+    return 0;
+}
